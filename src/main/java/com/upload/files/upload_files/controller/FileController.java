@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.upload.files.upload_files.model.File;
 import com.upload.files.upload_files.model.FileResponse;
 import com.upload.files.upload_files.service.FileService;
+import com.upload.files.upload_files.exception.InvalidFileException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,49 +31,43 @@ public class FileController {
     private final FileService fileService;
 
     @PostMapping("/upload")
-    public FileResponse uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-
+    public FileResponse uploadFile(@RequestParam("file") MultipartFile file) throws InvalidFileException {
         File model = fileService.saveFile(file);
         String fileUri = ServletUriComponentsBuilder.fromCurrentContextPath()
             .path("/file/download/")
-            .path(model.getId()) // Use o ID gerado como parte do URI.
+            .path(model.getId())
             .toUriString();
         return new FileResponse(model.getFileName(), model.getFileType(), fileUri);
     }
 
     @PostMapping("/uploadMultipleFiles")
     public List<FileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
-        return Arrays.asList(files).
-                stream().
-                map(file -> {
+        if (files == null || files.length == 0) {
+            throw new InvalidFileException("No files provided for upload.");
+        }
+
+        return Arrays.stream(files)
+                .map(file -> {
                     try {
                         return uploadFile(file);
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    } catch (InvalidFileException e) {
+                        throw new InvalidFileException("Error uploading file: " + file.getOriginalFilename(), e);
                     }
-                    return null;
-                }).
-                collect(Collectors.toList());
-    }    
+                })
+                .collect(Collectors.toList());
+    }
 
-       @GetMapping("/download/{id}")
+    @GetMapping("/download/{id}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String id) {
-            // Buscar o arquivo pelo ID
-            File model = fileService.getFile(id);
-
-            // Retornar o arquivo como recurso para download
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + model.getFileName() + "\"")
-                    .contentType(org.springframework.http.MediaType.parseMediaType(model.getFileType()))
-                    .body(new ByteArrayResource(model.getFileData()));
-
-
+        File model = fileService.getFile(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + model.getFileName() + "\"")
+                .contentType(org.springframework.http.MediaType.parseMediaType(model.getFileType()))
+                .body(new ByteArrayResource(model.getFileData()));
     }
 
     @GetMapping("/allfiles")
-    public  List<File>  getListFiles() {
-        List<File> fileDetails = fileService.getListOfFiles();
-        return fileDetails;
+    public List<File> getListFiles() {
+        return fileService.getListOfFiles();
     }
 }
