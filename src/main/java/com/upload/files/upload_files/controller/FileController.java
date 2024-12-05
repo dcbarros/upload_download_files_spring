@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.upload.files.upload_files.model.File;
-import com.upload.files.upload_files.model.FileResponse;
+import com.upload.files.upload_files.model.dto.FileResponse;
 import com.upload.files.upload_files.service.FileService;
 import com.upload.files.upload_files.exception.InvalidFileException;
 

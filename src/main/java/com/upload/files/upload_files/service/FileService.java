@@ -18,10 +18,13 @@ import lombok.RequiredArgsConstructor;
 public class FileService {
     private static final String INVALID_FILE_MESSAGE = "Invalid file: ";
     private static final String FILE_NOT_FOUND_MESSAGE = "File not found: ";
+    private static final String FILE_NULL = "File not send";
 
     private final FileRepository fileRepository;
 
     public File saveFile(MultipartFile file) throws InvalidFileException {
+        if(file == null) throw new InvalidFileException(FILE_NULL);
+        @SuppressWarnings("null")
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
 
         if (filename.contains("...") || filename.isBlank()) {
