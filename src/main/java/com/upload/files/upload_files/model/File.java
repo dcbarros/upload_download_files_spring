@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "fileUploadDownload")
+@Table(name = "file_upload_download")
 @Data
 @NoArgsConstructor
 public class File {

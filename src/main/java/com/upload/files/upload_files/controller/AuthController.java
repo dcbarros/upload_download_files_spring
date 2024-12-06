@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.upload.files.upload_files.service.AuthService;
+import com.upload.files.upload_files.security.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,10 +13,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+
     private final AuthService authService;
 
-    @PostMapping
-    public String authenticate(Authentication auth){
-        return authService.authenticate(auth);
+    @PostMapping("authenticate")
+    public String authenticate(
+        Authentication authentication) {
+      return authService.authenticate(authentication);
     }
 }

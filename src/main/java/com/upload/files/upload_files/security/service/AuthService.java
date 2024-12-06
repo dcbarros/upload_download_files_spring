@@ -1,4 +1,4 @@
-package com.upload.files.upload_files.service;
+package com.upload.files.upload_files.security.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
     private final JwtService jwtService;
 
-    public String authenticate(Authentication authentication){
+    public String authenticate(Authentication authentication) {
         return jwtService.generateToken(authentication);
-    }
+      }
 }
