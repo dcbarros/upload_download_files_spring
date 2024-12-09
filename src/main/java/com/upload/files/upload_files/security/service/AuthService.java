@@ -1,6 +1,9 @@
 package com.upload.files.upload_files.security.service;
 
 import org.springframework.stereotype.Service;
+
+import com.upload.files.upload_files.model.dto.AuthResponse;
+
 import org.springframework.security.core.Authentication;
 
 import lombok.RequiredArgsConstructor;
@@ -10,7 +13,8 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
     private final JwtService jwtService;
 
-    public String authenticate(Authentication authentication) {
-        return jwtService.generateToken(authentication);
-      }
+    public AuthResponse authenticate(Authentication authentication) {
+        AuthResponse token = new AuthResponse(jwtService.generateToken(authentication));
+        return token;
+    }
 }
